@@ -9,6 +9,9 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+<p>
+    <a asp-action="Favoritos">Favoritos</a>
+</p>
 <table class="table table-bordered table-secondary">
     <thead class="table-dark">
         <tr>
@@ -38,6 +41,10 @@
                        asp-action="Details" asp-route-id="@item.IdCoche">
                         <img src="@Html.DisplayFor(modelItem => item.Imagen)" width="200" height="200" />
                     </a>
+                </td>
+                <td>
+                    <a class="btn btn-danger" asp-controller="Coches"
+                       asp-action="SeleccionarFavorito" asp-route-id="@item.IdCoche">Añadir Favorito</a>
                 </td>
             </tr>
         }

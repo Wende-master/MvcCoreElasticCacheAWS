@@ -1,9 +1,11 @@
 using MvcCoreElasticCacheAWS.Repositories;
+using MvcCoreElasticCacheAWS.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddTransient<RepositoryCoches>();
+builder.Services.AddTransient<ServiceAWSCache>();
 
 builder.Services.AddControllersWithViews();
 
