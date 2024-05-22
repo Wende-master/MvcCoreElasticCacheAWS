@@ -24,6 +24,7 @@
             <th>
                 @Html.DisplayNameFor(model => model.Imagen)
             </th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -43,7 +44,7 @@
                     </a>
                 </td>
                 <td>
-                    <a class="btn btn-danger" asp-controller="Coches"
+                    <a class="btn btn-primary" asp-controller="Coches"
                        asp-action="SeleccionarFavorito" asp-route-id="@item.IdCoche">Añadir Favorito</a>
                 </td>
             </tr>

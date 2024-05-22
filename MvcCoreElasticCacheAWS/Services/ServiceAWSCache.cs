@@ -39,16 +39,13 @@ namespace MvcCoreElasticCacheAWS.Services
             {
                 coches = new List<Coche>();
             }
-            else
-            {
-                //AÑADIMOS EL NUEVO COCHE A LA LISTA
-                coches.Add(car);
-                //SERIALIZAMOS A JSON LA COLECCIÓN
-                string jsonCoches =
-                    JsonConvert.SerializeObject(coches);
-                //AÑADIREMOS 30 minutos de duración para los datos
-                await this.cache.StringSetAsync("cochesfavoritos", jsonCoches, TimeSpan.FromMinutes(30));
-            }
+            //AÑADIMOS EL NUEVO COCHE A LA LISTA
+            coches.Add(car);
+            //SERIALIZAMOS A JSON LA COLECCIÓN
+            string jsonCoches =
+                JsonConvert.SerializeObject(coches);
+            //AÑADIREMOS 30 minutos de duración para los datos
+            await this.cache.StringSetAsync("cochesfavoritos", jsonCoches, TimeSpan.FromMinutes(30));
         }
 
         public async Task DeleteCocheFavoritoAsync(int idcoche)
