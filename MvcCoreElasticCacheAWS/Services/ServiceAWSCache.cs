@@ -1,4 +1,5 @@
-﻿using MvcCoreElasticCacheAWS.Helpers;
+﻿using Microsoft.Extensions.Caching.Distributed;
+using MvcCoreElasticCacheAWS.Helpers;
 using MvcCoreElasticCacheAWS.Models;
 using Newtonsoft.Json;
 using StackExchange.Redis;
@@ -7,17 +8,19 @@ namespace MvcCoreElasticCacheAWS.Services
 {
     public class ServiceAWSCache
     {
-        private IDatabase cache;
-        public ServiceAWSCache()
+        //private IDatabase cache;
+        private IDistributedCache cache;
+        public ServiceAWSCache(IDistributedCache cache)
         {
-            this.cache = HelperCacheRedis.Connection.GetDatabase();
+            //this.cache = HelperCacheRedis.Connection.GetDatabase();
+            this.cache = cache;
         }
 
         public async Task<List<Coche>> GetCochesFavoritosAsync()
         {
             //KEYS ÚNICAS DE CADA USER
             string jsonCoches =
-                await this.cache.StringGetAsync("cochesfavoritos");
+                await this.cache.GetStringAsync("cochesfavoritos");
 
             if (jsonCoches == null)
             {
@@ -44,8 +47,13 @@ namespace MvcCoreElasticCacheAWS.Services
             //SERIALIZAMOS A JSON LA COLECCIÓN
             string jsonCoches =
                 JsonConvert.SerializeObject(coches);
+            DistributedCacheEntryOptions options =
+                new DistributedCacheEntryOptions
+                {
+                    SlidingExpiration = TimeSpan.FromSeconds(30),
+                };
             //AÑADIREMOS 30 minutos de duración para los datos
-            await this.cache.StringSetAsync("cochesfavoritos", jsonCoches, TimeSpan.FromMinutes(30));
+            await this.cache.SetStringAsync("cochesfavoritos", jsonCoches, options);
         }
 
         public async Task DeleteCocheFavoritoAsync(int idcoche)
@@ -60,15 +68,20 @@ namespace MvcCoreElasticCacheAWS.Services
 
                 if (cars.Count == 0)
                 {
-                    await this.cache.KeyDeleteAsync("cochesfavoritos");
+                    await this.cache.RemoveAsync("cochesfavoritos");
                 }
                 else
                 {
                     string jsonCoches =
                         JsonConvert.SerializeObject(cars);
                     //ACTUALIZAR EL CACHE
-                    await this.cache.StringSetAsync("cochesfavoritos", jsonCoches,
-                        TimeSpan.FromMinutes(30));
+                    DistributedCacheEntryOptions options =
+                new DistributedCacheEntryOptions
+                {
+                    SlidingExpiration = TimeSpan.FromSeconds(30),
+                };
+                    //AÑADIREMOS 30 minutos de duración para los datos
+                    await this.cache.SetStringAsync("cochesfavoritos", jsonCoches, options);
                 }
 
             }
